@@ -1,0 +1,5 @@
+/target
+/testing.db
+.idea
+/migrations
+*.exe

@@ -1,0 +1,26 @@
+[package]
+name = "grrs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+structopt = "0.3.21"
+anyhow = "1.0"
+diesel = { version = "1.4.8", features = ["sqlite"] }
+dotenv = "0.15.0"
+libsqlite3-sys = { version = "*", features = ["bundled"] }
+rand = "0.8.1"
+[source.crates-io]
+registry = "https://github.com/rust-lang/crates.io-index"
+
+replace-with = 'tuna'
+[source.tuna]
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+
+#replace-with = 'ustc'
+#[source.ustc]
+#registry = "git://mirrors.ustc.edu.cn/crates.io-index"
+
+[net]
+git-fetch-with-cli = true
