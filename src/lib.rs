@@ -22,21 +22,21 @@ pub fn establish_connection() -> SqliteConnection {
 
 use crate::models::NewPassword;
 
-use self::models::{Post, NewPost};
+//use self::models::{Post, NewPost};
 
-pub fn create_post<'a>(conn: &SqliteConnection, title: &'a str, body: &'a str) {
-    use schema::posts;
-
-    let new_post = NewPost {
-        title: title,
-        body: body,
-    };
-    
-
-    diesel::insert_into(posts::table)
-        .values(&new_post)
-        .execute(conn);
-}
+// pub fn create_post<'a>(conn: &SqliteConnection, title: &'a str, body: &'a str) {
+//     use schema::posts;
+//
+//     let new_post = NewPost {
+//         title: title,
+//         body: body,
+//     };
+//
+//
+//     diesel::insert_into(posts::table)
+//         .values(&new_post)
+//         .execute(conn);
+// }
 
 pub fn insert_pwd(conn:&SqliteConnection,key:&str,value:&str){
     use schema::password;
@@ -54,4 +54,9 @@ pub fn query_pwd(conn:&SqliteConnection,k:&str) -> Result<String> {
     use schema::password::dsl::*;
     let result = password.filter(key.eq(k)).load::<Password>(conn)?;
     Ok(result[0].value.clone())
+}
+
+pub fn list_pwd(conn:&SqliteConnection) -> QueryResult<Vec<Password>> {
+    use schema::password::dsl::*;
+    password.load::<Password>(conn)
 }

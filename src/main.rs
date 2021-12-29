@@ -62,7 +62,10 @@ fn main() -> Result<()> {
 impl Command {
     fn apply(self,conn:SqliteConnection) -> Result<()> {
         match self {
-            Command::List => {}
+            Command::List => {
+                let result = list_pwd(&conn)?;
+                result.into_iter().map(|f|println!("{}    {}",f.key,f.value)).collect::<Vec<_>>();
+            }
             Command::Info => {}
             Command::Sync => {}
             Command::Get { key } => {
@@ -76,6 +79,7 @@ impl Command {
                let rand_string:Vec<_> = thread_rng().sample_iter(&Alphanumeric).take(size).collect();
                let pwd = std::str::from_utf8(&rand_string).unwrap();
                insert_pwd(&conn, &key, pwd);
+                println!("{}",pwd);
             }
             _ => {}
         }
