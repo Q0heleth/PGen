@@ -2,10 +2,11 @@
 use anyhow::{Context, Result};
 use rand::{Rng, thread_rng};
 use rand::distributions::Alphanumeric;
-use diesel::SqliteConnection;
+use diesel::{RunQueryDsl, SqliteConnection};
 use std::io::BufRead;
 use structopt::StructOpt;
 use models::Password;
+use diesel::prelude::*;
 use diesel_migrations::embed_migrations;
 use grrs::*;
 extern  crate rand;
@@ -45,7 +46,7 @@ enum Command {
         key: String,
     },
     Delete {
-        key: String,
+        key: Option<String>,
     },
     List,
     Info,
@@ -73,14 +74,22 @@ impl Command {
         match self {
             Command::List => {
                 let result = list_pwd(&conn)?;
-                result.into_iter().map(|f|println!("{}",f)).collect::<Vec<_>>();
+                println!("key  value  description");
+                result.into_iter().map(|f|println!("{}  {}",f.key,f)).collect::<Vec<_>>();
             }
             Command::Info => {}
-            Command::Sync => {}
-            Command::Get { key } => {
-               let ret = query_pwd(&conn, &key)?;
+            Command::Delete {key:k} => {
+                use schema::password::dsl::*;
+                if let Some(k) =k {
+                    diesel::delete(password.filter(key.eq(k))).execute(&conn)?;
+                }else {
+                    diesel::delete(password).execute(&conn)?;
+                }
+            }
+            Command::Get { key:k } => {
+               let ret = query_pwd(&conn, &k)?;
                 if ret.is_empty() {
-                    println!("key {} not exist",key);
+                    eprintln!("key {} not exist",k);
                     return Ok(())
                 }
                ret.into_iter().map(|f|println!("{}",f)).collect::<Vec<_>>();

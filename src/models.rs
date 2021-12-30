@@ -19,7 +19,7 @@ pub struct NewPassword<'a> {
 impl Display for Password {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if let Some(ref desc) = self.description {
-            write!(f,"{} description:{}",self.value,desc)
+            write!(f,"{}    {}",self.value,desc)
         }else {
             write!(f,"{}",self.value)
         }
