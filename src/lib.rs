@@ -38,11 +38,12 @@ use crate::models::NewPassword;
 //         .execute(conn);
 // }
 
-pub fn insert_pwd(conn:&SqliteConnection,key:&str,value:&str){
+pub fn insert_pwd(conn:&SqliteConnection,key:&str,value:&str,description:Option<&str>){
     use schema::password;
     let new_pwd = NewPassword {
         key,
         value,
+        description
     };
     diesel::insert_into(password::table)
         .values(&new_pwd)
@@ -50,10 +51,10 @@ pub fn insert_pwd(conn:&SqliteConnection,key:&str,value:&str){
         .unwrap();
 }
 
-pub fn query_pwd(conn:&SqliteConnection,k:&str) -> Result<String> {
+pub fn query_pwd(conn:&SqliteConnection,k:&str) -> Result<Vec<Password>> {
     use schema::password::dsl::*;
     let result = password.filter(key.eq(k)).load::<Password>(conn)?;
-    Ok(result[0].value.clone())
+    Ok(result)
 }
 
 pub fn list_pwd(conn:&SqliteConnection) -> QueryResult<Vec<Password>> {

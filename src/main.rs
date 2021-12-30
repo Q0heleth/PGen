@@ -5,9 +5,12 @@ use rand::distributions::Alphanumeric;
 use diesel::SqliteConnection;
 use std::io::BufRead;
 use structopt::StructOpt;
+use models::Password;
+use diesel_migrations::embed_migrations;
 use grrs::*;
 extern  crate rand;
-
+#[macro_use]
+extern crate diesel_migrations;
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(StructOpt)]
 struct Cli {
@@ -18,22 +21,25 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-#[derive(Debug)]
-pub struct Password {
-    value: String,
-}
+// #[derive(Debug)]
+// pub struct Password {
+//     value: String,
+// }
 #[derive(StructOpt, Debug)]
 #[structopt(name = "command")]
 enum Command {
     Set {
         key: String,
-        #[structopt(parse(from_str=pwd_from_str))]
-        pwd: Password,
+        pwd: String,
+        #[structopt(short = "m")]
+        desc:Option<String>,
     },
     Gen {
         key:String,
-        #[structopt(default_value = "12")]
+        #[structopt(default_value = "12",short = "s")]
         size: usize,
+        #[structopt(short = "m")]
+        desc:Option<String>,
     },
     Get {
         key: String,
@@ -47,14 +53,17 @@ enum Command {
     Sync,
 }
 
-fn pwd_from_str(src: &str) -> Password {
-    Password {
-        value: src.to_string(),
-    }
-}
+// fn pwd_from_str(src: &str) -> Password {
+//     Password {
+//         value: src.to_string(),
+//
+//     }
+// }
+embed_migrations!();
 fn main() -> Result<()> {
     let cli = Cli::from_args();
     let conn = establish_connection();
+    embedded_migrations::run(&conn);
     cli.command.apply(conn);
     Ok(())
 }
@@ -64,21 +73,21 @@ impl Command {
         match self {
             Command::List => {
                 let result = list_pwd(&conn)?;
-                result.into_iter().map(|f|println!("{}    {}",f.key,f.value)).collect::<Vec<_>>();
+                result.into_iter().map(|f|println!("{}",f)).collect::<Vec<_>>();
             }
             Command::Info => {}
             Command::Sync => {}
             Command::Get { key } => {
                let ret = query_pwd(&conn, &key).expect("keys not exist");
-               print!("{}",ret);
+               ret.into_iter().map(|f|println!("{}",f)).collect::<Vec<_>>();
             }
-            Command::Set { key, pwd } => {
-                insert_pwd(&conn, &key, &pwd.value);
+            Command::Set { key, pwd ,desc} => {
+                insert_pwd(&conn, &key, &pwd,desc.as_deref());
             }
-            Command::Gen{key,size} => {
+            Command::Gen{key,size,desc} => {
                let rand_string:Vec<_> = thread_rng().sample_iter(&Alphanumeric).take(size).collect();
                let pwd = std::str::from_utf8(&rand_string).unwrap();
-               insert_pwd(&conn, &key, pwd);
+               insert_pwd(&conn, &key, pwd,desc.as_deref());
                 println!("{}",pwd);
             }
             _ => {}

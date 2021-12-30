@@ -11,6 +11,7 @@ diesel = { version = "1.4.8", features = ["sqlite"] }
 dotenv = "0.15.0"
 libsqlite3-sys = { version = "*", features = ["bundled"] }
 rand = "0.8.1"
+diesel_migrations ="1.4.0"
 [source.crates-io]
 registry = "https://github.com/rust-lang/crates.io-index"
 
