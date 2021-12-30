@@ -78,7 +78,11 @@ impl Command {
             Command::Info => {}
             Command::Sync => {}
             Command::Get { key } => {
-               let ret = query_pwd(&conn, &key).expect("keys not exist");
+               let ret = query_pwd(&conn, &key)?;
+                if ret.is_empty() {
+                    println!("key {} not exist",key);
+                    return Ok(())
+                }
                ret.into_iter().map(|f|println!("{}",f)).collect::<Vec<_>>();
             }
             Command::Set { key, pwd ,desc} => {

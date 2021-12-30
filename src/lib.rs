@@ -51,10 +51,9 @@ pub fn insert_pwd(conn:&SqliteConnection,key:&str,value:&str,description:Option<
         .unwrap();
 }
 
-pub fn query_pwd(conn:&SqliteConnection,k:&str) -> Result<Vec<Password>> {
+pub fn query_pwd(conn:&SqliteConnection,k:&str) -> Result<Vec<Password>, diesel::result::Error> {
     use schema::password::dsl::*;
-    let result = password.filter(key.eq(k)).load::<Password>(conn)?;
-    Ok(result)
+   password.filter(key.eq(k)).load::<Password>(conn)
 }
 
 pub fn list_pwd(conn:&SqliteConnection) -> QueryResult<Vec<Password>> {
