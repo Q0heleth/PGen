@@ -8,18 +8,15 @@ use structopt::StructOpt;
 use models::Password;
 use diesel::prelude::*;
 use diesel_migrations::embed_migrations;
-use grrs::*;
+use pgen::*;
+use std::env;
 extern  crate rand;
 #[macro_use]
 extern crate diesel_migrations;
-/// Search for a pattern in a file and display the lines that contain it.
 #[derive(StructOpt)]
 struct Cli {
     #[structopt(subcommand)]
     command: Command,
-    /// The path to the file to read
-    #[structopt(parse(from_os_str), default_value = "./pwd.db")]
-    path: std::path::PathBuf,
 }
 
 // #[derive(Debug)]
@@ -49,7 +46,7 @@ enum Command {
         key: Option<String>,
     },
     List,
-    Info,
+    Version,
     Upload,
     Sync,
 }
@@ -77,7 +74,9 @@ impl Command {
                 println!("key  value  description");
                 result.into_iter().map(|f|println!("{}  {}",f.key,f)).collect::<Vec<_>>();
             }
-            Command::Info => {}
+            Command::Version => {
+                println!("PGen is made by csh, Email:317595241@qq.com db file is in CARGO_HOME");
+            }
             Command::Delete {key:k} => {
                 use schema::password::dsl::*;
                 if let Some(k) =k {

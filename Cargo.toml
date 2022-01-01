@@ -1,5 +1,5 @@
 [package]
-name = "grrs"
+name = "pgen"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,7 +8,6 @@ edition = "2021"
 structopt = "0.3.21"
 anyhow = "1.0"
 diesel = { version = "1.4.8", features = ["sqlite"] }
-dotenv = "0.15.0"
 libsqlite3-sys = { version = "*", features = ["bundled"] }
 rand = "0.8.1"
 diesel_migrations ="1.4.0"
