@@ -3,6 +3,7 @@ extern crate diesel;
 use anyhow::Result;
 pub mod schema;
 pub mod models;
+pub mod cmd;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use models::Password;
